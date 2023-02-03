@@ -1,0 +1,49 @@
+// color
+$color: (
+  main: #D96894,
+
+  textColor: #333,
+
+  black: #000,
+  white: #fff,
+);
+
+// size
+$header: 60px;
+$toggle: 50px;
+$l-inner: 1500px;
+$m-inner: 1200px;
+$s-inner: 1000px;
+$inner-sp: 900px;
+// padding
+$padding: 60px;
+$padding-sp: 20px;
+
+// font-family
+$mainFont:  'Noto Sans JP', Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+$minchoFont: 'Shippori Mincho', serif;
+$englishFont: 'Marcellus', serif;
+
+// breakpoint
+$breakpoints : (
+  "xl":"screen and (max-width:1600px)",
+  "l":"screen and (max-width:1280px)",
+  "m":"screen and (max-width:1080px)",
+  "hov": "screen and (min-width: 768px)",
+  "sp":"screen and (max-width:767px)",
+  "xs":"screen and (max-width:499px)",
+);
+
+// transition time
+$ts-time: 0.3s;
+
+// z-index
+$z-map : (
+  modal: 10000,
+  header: 1000,
+  sidebar: 100,
+  toTop: 50,
+  main: 10,
+  base: 1,
+  under: -1,
+);

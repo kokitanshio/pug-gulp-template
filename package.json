@@ -1,0 +1,32 @@
+{
+  "name": "pug-gulp-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kokitanshio/pug-gulp-template.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kokitanshio/pug-gulp-template/issues"
+  },
+  "homepage": "https://github.com/kokitanshio/pug-gulp-template#readme",
+  "dependencies": {
+    "browser-sync": "^2.27.11",
+    "css-mqpacker": "^7.0.0",
+    "del": "^6.1.1",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^8.0.0",
+    "gulp-dart-sass": "^1.0.2",
+    "gulp-notify": "^4.0.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-postcss": "^9.0.1",
+    "gulp-pug": "^5.0.0"
+  }
+}

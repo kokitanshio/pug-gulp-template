@@ -1,0 +1,32 @@
+@use "./variable" as var;
+@use "./function" as fn;
+
+// メディアクエリ
+@mixin mq($breakpoint:m){
+  @media #{map-get(var.$breakpoints,$breakpoint)}{
+    @content;
+  }
+}
+
+// font-sizeのmixin
+@mixin font($size){
+  font-size: $size * 1px;
+  font-size: fn.rem($size);
+}
+
+// font-sizeのVW化
+@mixin fz_vw($size: 16){
+  font-size: $size * 1px;
+  font-size: fn.rem($size);
+  font-size: fn.get_vw($size);
+}
+
+// リンクのホバーアクションデフォルト
+@mixin hover() {
+  transition: opacity var.$ts-time ease;
+  @include mq(hov){
+    &:hover{
+      opacity: 0.7;
+    }
+  }
+}
