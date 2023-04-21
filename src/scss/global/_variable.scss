@@ -3,26 +3,15 @@ $color: (
   main: #D96894,
 
   textColor: #333,
-
-  black: #000,
-  white: #fff,
 );
 
 // size
-$header: 60px;
-$toggle: 50px;
-$l-inner: 1500px;
 $m-inner: 1200px;
-$s-inner: 1000px;
-$inner-sp: 900px;
 // padding
 $padding: 60px;
-$padding-sp: 20px;
 
 // font-family
 $mainFont:  'Noto Sans JP', Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-$minchoFont: 'Shippori Mincho', serif;
-$englishFont: 'Marcellus', serif;
 
 // breakpoint
 $breakpoints : (
@@ -39,11 +28,8 @@ $ts-time: 0.3s;
 
 // z-index
 $z-map : (
-  modal: 10000,
-  header: 1000,
-  sidebar: 100,
-  toTop: 50,
-  main: 10,
+  header: 100,
+  sidebar: 10,
   base: 1,
   under: -1,
 );
