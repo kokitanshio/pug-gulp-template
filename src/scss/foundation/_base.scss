@@ -1,8 +1,8 @@
 @use "../global/" as global;
 
 body{
-  font-family: global.$mainFont;
-  color: map-get(global.$color, textColor);
+  font-family: global.$ff-main;
+  color: map-get(global.$color, text);
 }
 
 a{
