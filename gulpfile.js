@@ -9,27 +9,39 @@ const browserSync = require("browser-sync"); //ブラウザリロード
 const autoprefixer = require('gulp-autoprefixer'); //ベンダープレフィックス自動付与
 const postcss = require("gulp-postcss"); //css-mqpackerを使用
 const mqpacker = require('css-mqpacker'); //メディアクエリをまとめる
-const pug = require('gulp-pug'); //pugを使用
 
+//pugを使用
+const pug = require('gulp-pug');
+
+// 画像圧縮
+const change = require('gulp-changed');
+const imageMin = require("gulp-imagemin");
+const mozJpeg = require("imagemin-mozjpeg");
+const pngQuant = require("imagemin-pngquant");
+
+// webp変換
+const webp = require('gulp-webp'); //gulp-webpでwebp変換
 
 // 入出力するフォルダを指定
 const srcBase = './src';
+const srcBaseAssets = './src/assets';
 const distBase = './dist';
+const distBaseAssets = './dist/assets';
 
 
 const srcPath = {
   'scss': srcBase + '/scss/**/*.scss',
   'html': srcBase + '/**/*.html',
-  'img': srcBase + '/images/**/*',
-  'js': srcBase + '/js/*.js',
+  'img': srcBaseAssets + '/images/**/*',
+  'js': srcBaseAssets + '/js/*.js',
   'pug': srcBase + '/pug/**/*.pug',
 };
 
 const distPath = {
-  'css': distBase + '/css/',
+  'css': distBaseAssets + '/css/',
   'html': distBase + '/',
-  'img': distBase + '/images/',
-  'js': distBase + '/js/'
+  'img': distBaseAssets + '/images/',
+  'js': distBaseAssets + '/js/'
 };
 
 
@@ -115,9 +127,24 @@ const js = () => {
  */
 const image = () => {
   return gulp.src(srcPath.img)
+    .pipe(change(distPath.img))
+    .pipe(
+      imageMin([
+        pngQuant({
+          quality: [0.75, 0.8],
+          speed: 1,
+        }),
+        mozJpeg({
+          quality: 80,
+        }),
+        imageMin.svgo(),
+        imageMin.optipng(),
+        imageMin.gifsicle({ optimizationLevel: 3 })
+      ])
+    )
+    .pipe(webp())
     .pipe(gulp.dest(distPath.img))
 }
-
 
 
 /**
