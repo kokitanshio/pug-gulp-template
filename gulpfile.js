@@ -9,6 +9,8 @@ const browserSync = require("browser-sync"); //ブラウザリロード
 const autoprefixer = require('gulp-autoprefixer'); //ベンダープレフィックス自動付与
 const postcss = require("gulp-postcss"); //css-mqpackerを使用
 const mqpacker = require('css-mqpacker'); //メディアクエリをまとめる
+const cssDeclarationSorter = require("css-declaration-sorter"); //cssプロパティをソート
+const glob = require('gulp-sass-glob-use-forward'); //sassのimportを簡潔に記述
 
 //pugを使用
 const pug = require('gulp-pug');
@@ -30,18 +32,23 @@ const distBaseAssets = './dist/assets';
 
 
 const srcPath = {
-  'scss': srcBase + '/scss/**/*.scss',
-  'html': srcBase + '/**/*.html',
-  'img': srcBaseAssets + '/images/**/*',
-  'js': srcBaseAssets + '/js/*.js',
-  'pug': srcBase + '/pug/**/*.pug',
+  scss: srcBase + "/scss/**/*.scss",
+  html: srcBase + "/**/*.html",
+  img: srcBaseAssets + "/images/**/*",
+  metaImg:
+    srcBaseAssets + "/metaImages/**/*.{png,jpg,jpeg,svg,ico,json,webmanifest}",
+  js: srcBaseAssets + "/js/*.js",
+  font: srcBaseAssets + "/fonts/**/*",
+  pug: srcBase + "/pug/**/*.pug",
 };
 
 const distPath = {
-  'css': distBaseAssets + '/css/',
-  'html': distBase + '/',
-  'img': distBaseAssets + '/images/',
-  'js': distBaseAssets + '/js/'
+  css: distBaseAssets + "/css/",
+  html: distBase + "/",
+  img: distBaseAssets + "/images/",
+  metaImg: distBase + "/",
+  font: distBaseAssets + "/fonts/",
+  js: distBaseAssets + "/js/",
 };
 
 
@@ -88,29 +95,46 @@ const compilePug = () => {
  * sass
  *
  */
-const cssSass = () => {
-  return gulp.src(srcPath.scss, {
-      sourcemaps: true
+const cssSass = (done) => {
+  gulp
+    .src(srcPath.scss, {
+      sourcemaps: true,
     })
+    .pipe(glob())
     .pipe(
       //エラーが出ても処理を止めない
       plumber({
-        errorHandler: notify.onError('Error:<%= error.message %>')
-      }))
-    .pipe(sass({
-      outputStyle: 'expanded'
-    })) //指定できるキー expanded compressed
+        errorHandler: notify.onError("Error:<%= error.message %>"),
+      }),
+    )
+    .pipe(
+      sass({
+        outputStyle: "expanded",
+      }),
+    ) //指定できるキー expanded compressed
     .pipe(autoprefixer(TARGET_BROWSERS))
+    .pipe(
+      postcss([
+        cssDeclarationSorter({
+          order: "alphabetical",
+        }),
+      ]),
+    ) //プロパティをアルファベット順にソート
     .pipe(postcss([mqpacker()])) // メディアクエリをまとめる
-    .pipe(gulp.dest(distPath.css, {
-      sourcemaps: './'
-    })) //コンパイル先
+    .pipe(
+      gulp.dest(distPath.css, {
+        sourcemaps: "./",
+      }),
+    ) //コンパイル先
     .pipe(browserSync.stream())
-    .pipe(notify({
-      message: 'Sassをコンパイルしました！',
-      onLast: true
-    }))
-}
+    .pipe(
+      notify({
+        message: "Sassをコンパイルしました！",
+        onLast: true,
+      }),
+    );
+  done();
+};
 
 
 /**
@@ -145,6 +169,38 @@ const image = () => {
     .pipe(webp())
     .pipe(gulp.dest(distPath.img))
 }
+/**
+ * metaImg
+ */
+const metaImg = (done) => {
+  gulp.src(srcPath.metaImg)
+    .pipe(change(distBase))
+    .pipe(
+      imageMin([
+        pngQuant({
+          quality: [0.75, 0.8],
+          speed: 1,
+        }),
+        mozJpeg({
+          quality: 80,
+        }),
+        imageMin.svgo(),
+        imageMin.optipng(),
+        imageMin.gifsicle({ optimizationLevel: 3 })
+      ])
+    )
+    .pipe(gulp.dest(distBase));
+  done();
+}
+
+
+/**
+ * font
+ */
+const font = () => {
+  return gulp.src(srcPath.font)
+    .pipe(gulp.dest(distPath.font))
+}
 
 
 /**
@@ -174,10 +230,12 @@ const browserSyncReload = (done) => {
  * watch('監視するファイル',処理)
  */
 const watchFiles = () => {
-  gulp.watch(srcPath.pug, gulp.series(compilePug, browserSyncReload))
-  gulp.watch(srcPath.scss, gulp.series(cssSass))
-  gulp.watch(srcPath.js, gulp.series(js, browserSyncReload))
-  gulp.watch(srcPath.img, gulp.series(image, browserSyncReload))
+  gulp.watch(srcPath.pug, gulp.series(compilePug, browserSyncReload));
+  gulp.watch(srcPath.scss, gulp.series(cssSass));
+  gulp.watch(srcPath.js, gulp.series(js, browserSyncReload));
+  gulp.watch(srcPath.img, gulp.series(image, browserSyncReload));
+  gulp.watch(srcPath.font, gulp.series(font, browserSyncReload));
+  gulp.watch(srcPath.metaImg, gulp.series(metaImg, browserSyncReload));
 }
 
 /**
@@ -188,6 +246,6 @@ const watchFiles = () => {
  */
 exports.default = gulp.series(
   clean,
-  gulp.parallel(compilePug, cssSass, js, image),
+  gulp.parallel(compilePug, cssSass, js, image, metaImg, font),
   gulp.parallel(watchFiles, browserSyncFunc)
 );
